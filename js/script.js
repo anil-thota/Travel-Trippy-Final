@@ -56,7 +56,61 @@
 		return elem.offset().top + elem.outerHeight() >= $window.scrollTop() && elem.offset().top <= $window.scrollTop() + $window.height();
 	}
 
+	// Modal Open 
+
+	document.addEventListener("DOMContentLoaded", function () {
+		// When the submit button is clicked
+		document.getElementById('submitProjectId').addEventListener('click', function (event) {
+			event.preventDefault(); // Prevent default behavior (in case this is part of a form)
+			
+			const projectId = document.getElementById('projectIdInput').value;
+			if (!projectId) {
+				alert("Please enter a Project ID");
+				return;
+			}
+	
+			let checkProjectId = false;
+	
+			console.log("Button clicked, starting fetch..."); // Debugging line to check button click
+	
+			// Fetch the project data from the API
+			fetch('http://localhost:3001/project')
+				.then(response => {
+					console.log("API response received"); // Debugging line to confirm API call
+					return response.json();
+				})
+				.then(data => {
+					const projects = data.projects; // Access the 'projects' array from the API response
+					console.log("Projects data fetched:", projects); // Debugging line to show fetched projects
+	
+					// Iterate over each project and check if the entered ID matches any project's _id
+					projects.forEach(project => {
+						if (project._id === projectId) {
+							checkProjectId = true;
+						}
+					});
+	
+					// Check if the project ID is valid
+					if (checkProjectId) {
+						// Hide the modal and display the main content and footer
+						document.getElementById('projectIdModal').style.display = 'none';
+						document.getElementById('mainContent').style.display = 'block';
+						document.getElementById('footerContent').style.display = 'flex'; // Updated to display flex
+					} else {
+						alert("Please enter a valid Project ID");
+					}
+				})
+				.catch(error => {
+					console.error("Error fetching project data:", error);
+					alert("An error occurred while fetching project data. Please try again later.");
+				});
+		});
+	});
+	
+	
+
 	//logo dynamically update 
+
 	// Global variables
     var logoElement = document.querySelector('.rd-navbar-brand .brand img');
 			console.log("Logo Element:", logoElement);
