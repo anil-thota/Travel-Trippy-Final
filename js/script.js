@@ -56,57 +56,72 @@
 		return elem.offset().top + elem.outerHeight() >= $window.scrollTop() && elem.offset().top <= $window.scrollTop() + $window.height();
 	}
 
+	// Project ID Initialization
+
+
 	// Modal Open 
 
-	document.addEventListener("DOMContentLoaded", function () {
-		// When the submit button is clicked
-		document.getElementById('submitProjectId').addEventListener('click', function (event) {
-			event.preventDefault(); // Prevent default behavior (in case this is part of a form)
-			
-			const projectId = document.getElementById('projectIdInput').value;
-			if (!projectId) {
-				alert("Please enter a Project ID");
-				return;
-			}
-	
-			let checkProjectId = false;
-	
-			console.log("Button clicked, starting fetch..."); // Debugging line to check button click
-	
-			// Fetch the project data from the API
-			fetch('http://localhost:3001/project')
-				.then(response => {
-					console.log("API response received"); // Debugging line to confirm API call
-					return response.json();
-				})
-				.then(data => {
-					const projects = data.projects; // Access the 'projects' array from the API response
-					console.log("Projects data fetched:", projects); // Debugging line to show fetched projects
-	
-					// Iterate over each project and check if the entered ID matches any project's _id
-					projects.forEach(project => {
-						if (project._id === projectId) {
-							checkProjectId = true;
-						}
-					});
-	
-					// Check if the project ID is valid
-					if (checkProjectId) {
-						// Hide the modal and display the main content and footer
-						document.getElementById('projectIdModal').style.display = 'none';
-						document.getElementById('mainContent').style.display = 'block';
-						document.getElementById('footerContent').style.display = 'flex'; // Updated to display flex
-					} else {
-						alert("Please enter a valid Project ID");
+	// Global variables
+var PROJECTID = "";
+
+// Document ready (DOMContentLoaded) function
+document.addEventListener("DOMContentLoaded", function () {
+	// When the submit button is clicked
+	document.getElementById('submitProjectId').addEventListener('click', function (event) {
+		event.preventDefault(); // Prevent default behavior (in case this is part of a form)
+
+		const projectId = document.getElementById('projectIdInput').value;
+		if (!projectId) {
+			alert("Please enter a Project ID");
+			return;
+		}
+
+		let checkProjectId = false;
+
+		console.log("Button clicked, starting fetch..."); // Debugging line to check button click
+
+		// Fetch the project data from the API
+		fetch('http://localhost:3001/project')
+			.then(response => {
+				console.log("API response received"); // Debugging line to confirm API call
+				return response.json();
+			})
+			.then(data => {
+				const projects = data.projects; // Access the 'projects' array from the API response
+				console.log("Projects data fetched:", projects); // Debugging line to show fetched projects
+
+				// Iterate over each project and check if the entered ID matches any project's _id
+				projects.forEach(project => {
+					if (project._id === projectId) {
+						checkProjectId = true;
+						PROJECTID = projectId;
 					}
-				})
-				.catch(error => {
-					console.error("Error fetching project data:", error);
-					alert("An error occurred while fetching project data. Please try again later.");
 				});
-		});
+
+				// Check if the project ID is valid
+				if (checkProjectId) {
+					// Hide the modal and display the main content and footer
+					document.getElementById('projectIdModal').style.display = 'none';
+					document.getElementById('mainContent').style.display = 'block';
+					document.getElementById('footerContent').style.display = 'block'; // Updated to display flex
+
+					// Fetch and update the content after project ID is confirmed
+					updateLogo();           // Fetch and update the logo
+					updateCarouselSlides(); // Fetch and update carousel slides
+					updateCategoryBanners(); // Fetch and update category banners
+					updateAboutSection();   // Fetch and update the About section
+					updateAddressDetails();
+					updateTravelDetails();
+					updateBannerImages();
+					fetchAndDisplayGalleryProducts();
+					fetchAndDisplayTeamMembers();
+				} else {
+					alert("Please enter a valid Project ID");
+				}
+			})
+			
 	});
-	
+});
 	
 
 	//logo dynamically update 
@@ -118,7 +133,7 @@
     // Function to update the logo dynamically
     function updateLogo() {
         // Fetch the logo data from the API
-        fetch('http://localhost:3001/properties/66d04824921893b2c9813c1b/logo')
+        fetch(`http://localhost:3001/properties/${PROJECTID}/logo`)
     .then(response => response.json())
     .then(data => {
         console.log("API Response:", data);
@@ -134,13 +149,9 @@
 
     }
 
-    // Call the function to update the logo when the page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        updateLogo();
-    });
 
 	function updateCarouselSlides() {
-		fetch('http://localhost:3001/properties/66d04824921893b2c9813c1b/banner')
+		fetch(`http://localhost:3001/properties/${PROJECTID}/banner`)
 		  .then(response => response.json())
 		  .then(data => {
 			if (data.banners && data.banners.length > 0) {
@@ -192,15 +203,13 @@
 	  }
 	
 	  // Call the function to update the carousel slides when the page loads
-	  document.addEventListener('DOMContentLoaded', function () {
-		updateCarouselSlides();
-	  });
+	  
 
 	// Function to upadte cards 
-	document.addEventListener('DOMContentLoaded', function () {
+	function updateCategoryBanners() {
 		const categoryBannersContainer = document.getElementById('category-banners');
-		
-		fetch('http://localhost:3001/properties/66d04824921893b2c9813c1b/banner')
+	
+		fetch(`http://localhost:3001/properties/${PROJECTID}/banner`)
 			.then(response => response.json())
 			.then(data => {
 				const categoryBanners = data.categoryBanners;
@@ -224,19 +233,19 @@
 				categoryBannersContainer.innerHTML = bannersHtml;
 			})
 			.catch(error => console.error('Error fetching banner data:', error));
-	});
+	}
 
 	//update about us section 
-	document.addEventListener('DOMContentLoaded', function () {
+	function updateAboutSection() {
 		const aboutDescriptionElement = document.getElementById('about-description');
 		const aboutImageElement = document.getElementById('about-image');
 	
-		fetch('http://localhost:3001/properties/66d04824921893b2c9813c1b/about')
+		fetch(`http://localhost:3001/properties/${PROJECTID}/about`)
 			.then(response => response.json())
 			.then(data => {
 				// Assuming the response data is an array with a single object
 				const aboutData = data[0];
-				
+	
 				aboutDescriptionElement.textContent = aboutData.description;
 	
 				aboutImageElement.src = aboutData.image;
@@ -247,47 +256,51 @@
 				aboutImageElement.style.height = '300px';
 			})
 			.catch(error => console.error('Error fetching about data:', error));
-	});
+	}
   
 	//function to update address 
 	function updateAddressDetails() {
-		fetch('http://localhost:3001/properties/66d04824921893b2c9813c1b/address')
-		  .then(response => response.json())
-		  .then(data => {
-			if (data) {
-			  // Log the address details for debugging
-			  console.log('Address details:', data);
-	  
-			  // Update phone number
-			  var linkPhone = document.querySelector('.link-phone');
-			  linkPhone.textContent = data.contactNo;
-			  linkPhone.href = `tel:${data.contactNo}`;
-	  
-			  // Update email
-			  var linkEmail = document.querySelector('.link-aemail');
-			  linkEmail.textContent = data.emailId;
-			  linkEmail.href = `mailto:${data.emailId}`;
-	  
-			  // Update location
-			  var linkLocation = document.querySelector('.link-location');
-			  linkLocation.textContent = `${data.street}, ${data.city}, ${data.state}, ${data.pincode}`;
-			} else {
-			  console.error('No address details found in the response');
-			}
-		  })
-		  .catch(error => {
-			console.error('Error fetching the address details:', error);
-		  });
-	  }
+		fetch(`http://localhost:3001/properties/${PROJECTID}/address`)
+			.then(response => response.json())
+			.then(data => {
+				if (data) {
+					// Log the address details for debugging
+					console.log('Address details:', data);
+	
+					// Update phone number
+					var phoneElements = document.querySelectorAll('.link-phone');
+					phoneElements.forEach(element => {
+						element.textContent = data.contactNo;
+						element.href = `tel:${data.contactNo}`;
+					});
+	
+					// Update email
+					var emailElements = document.querySelectorAll('.link-aemail');
+					emailElements.forEach(element => {
+						element.textContent = data.emailId;
+						element.href = `mailto:${data.emailId}`;
+					});
+	
+					// Update location
+					var locationElements = document.querySelectorAll('.link-location');
+					locationElements.forEach(element => {
+						element.textContent = `${data.street}, ${data.city}, ${data.state}, ${data.pincode}`;
+					});
+				} else {
+					console.error('No address details found in the response');
+				}
+			})
+			.catch(error => {
+				console.error('Error fetching the address details:', error);
+			});
+	}
+	
 	  
 	  // Call the function to update the address details when the page loads
-	  document.addEventListener('DOMContentLoaded', function () {
-		updateAddressDetails();
-	  });
 
 	  //update hot tours 
 	  function updateTravelDetails() {
-		fetch('http://localhost:3001/properties/66d04824921893b2c9813c1b/product')
+		fetch(`http://localhost:3001/properties/${PROJECTID}/product`)
 		  .then(response => response.json())
 		  .then(data => {
 			if (data.allProducts && data.allProducts.length > 0) {
@@ -330,14 +343,12 @@
 	  }
 	  
 	  // Call the function to update the travel details when the page loads
-	  document.addEventListener('DOMContentLoaded', function () {
-		updateTravelDetails();
-	  });
+	 
 	  
 	  //update team members 
-	  document.addEventListener('DOMContentLoaded', async function () {
+	  async function fetchAndDisplayTeamMembers() {
 		try {
-		  const response = await fetch('http://localhost:3001/properties/66d04824921893b2c9813c1b/product');
+		  const response = await fetch(`http://localhost:3001/properties/${PROJECTID}/product`);
 		  const data = await response.json();
 		  const teamContainer = document.getElementById('team-container');
 	  
@@ -373,12 +384,15 @@
 		} catch (error) {
 		  console.error('Error fetching team data:', error);
 		}
-	  });
+	  }
+	  
+	  // Call the function when the DOM is loaded
+	  
 
 	  // updating banner in the middle 
 	  // Function to fetch data and update the parallax background image
 function updateBannerImages() {
-	fetch('http://localhost:3001/properties/66d04824921893b2c9813c1b/product')
+	fetch(`http://localhost:3001/properties/${PROJECTID}/product`)
 	  .then(response => response.json())
 	  .then(data => {
 		// Extract the 'allProducts' array
@@ -413,11 +427,7 @@ function updateBannerImages() {
   }
   
   // Call the function to update banners when the DOM is loaded
-  document.addEventListener('DOMContentLoaded', function () {
-	updateBannerImages();
-	//hi
-  });
-  
+ 
   
   
 	  
@@ -425,9 +435,9 @@ function updateBannerImages() {
 	  
 	  //update Gallery 
 
-	  document.addEventListener('DOMContentLoaded', function () {
-		const apiUrl = 'http://localhost:3001/properties/66d04824921893b2c9813c1b/product';
-		
+	  function fetchAndDisplayGalleryProducts() {
+		const apiUrl = `http://localhost:3001/properties/${PROJECTID}/product`;
+	
 		// Fetch the product data from the API
 		fetch(apiUrl)
 			.then(response => response.json())
@@ -436,10 +446,10 @@ function updateBannerImages() {
 				const galleryProducts = data.allProducts.filter(item => item.category.name === 'GALLERY');
 	
 				console.log("Gallery", galleryProducts);
-				
+	
 				// Get the container where thumbnails will be appended or updated
 				const container = document.querySelector('.gallery-container');
-				
+	
 				// Clear existing thumbnails (if needed)
 				container.innerHTML = '';
 	
@@ -448,7 +458,7 @@ function updateBannerImages() {
 					// Create a new thumbnail element
 					const thumbnail = document.createElement('article');
 					thumbnail.classList.add('thumbnail', 'thumbnail-mary');
-					
+	
 					// Create and append a figure element with the image
 					const figureElement = document.createElement('div');
 					figureElement.classList.add('thumbnail-mary-figure');
@@ -459,7 +469,7 @@ function updateBannerImages() {
 					imageElement.height = 195;
 					figureElement.appendChild(imageElement);
 					thumbnail.appendChild(figureElement);
-					
+	
 					// Create and append a caption element with the link
 					const captionElement = document.createElement('div');
 					captionElement.classList.add('thumbnail-mary-caption');
@@ -470,7 +480,7 @@ function updateBannerImages() {
 					linkElement.appendChild(imageElement.cloneNode(true)); // Clone the image for the link
 					captionElement.appendChild(linkElement);
 					thumbnail.appendChild(captionElement);
-					
+	
 					// Append the new thumbnail to the container
 					container.appendChild(thumbnail);
 				});
@@ -478,7 +488,10 @@ function updateBannerImages() {
 			.catch(error => {
 				console.error('Error fetching data:', error);
 			});
-	});
+	}
+	
+	// Call the function when the DOM is loaded
+	
 	
 	
 	
