@@ -15,17 +15,27 @@
     <style>.ie-panel{display: none;background: #212121;padding: 10px 0;box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3);clear: both;text-align:center;position: relative;z-index: 1;} html.ie-10 .ie-panel, html.lt-ie-10 .ie-panel {display: block;}</style>
   </head>
   <body>
-    <div class="ie-panel"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
-    <div class="preloader">
-      <div class="preloader-body">
-        <div class="cssload-container">
-          <div class="cssload-speeding-wheel"></div>
+
+    <div class="modal" id="projectIdModal" tabindex="-1" role="dialog" aria-hidden="true" style="display:block;">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Enter Project ID</h5>
+          </div>
+          <div class="modal-body">
+            <input type="text" id="projectIdInput" class="form-control" placeholder="Enter Project ID" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="submitProjectId" class="btn btn-primary">Submit</button>
+          </div>
         </div>
-        <p>Loading...</p>
       </div>
     </div>
-    <div class="page">
-      <!-- Page Header--><a class="banner banner-top" href="https://www.templatemonster.com/intense-multipurpose-html-template.html" target="_blank"><img src="images/intense_02.jpg" alt=""/></a>
+
+
+    <div id="mainContent" style="display: none;">
+
+      
       <header class="section page-header">
         <!-- RD Navbar-->
         <div class="rd-navbar-wrap">
@@ -39,7 +49,7 @@
                   <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span></button>
                   <!-- RD Navbar Brand-->
                   <div class="rd-navbar-brand">
-                    <!--Brand--><a class="brand" href="index.html"><img src="images/logo-default-450x37.png" alt="" width="225" height="18"/></a>
+                    <!--Brand--><a class="brand" href="index.html"><img class="dynamicLogo" src="images/logo-default-450x37.png" alt="" width="225" height="18"/></a>
                   </div>
                 </div>
                 <div class="rd-navbar-aside-right rd-navbar-collapse">
@@ -107,8 +117,8 @@
                 <div class="box-contacts-body">
                   <div class="box-contacts-icon fl-bigmug-line-cellphone55"></div>
                   <div class="box-contacts-decor"></div>
-                  <p class="box-contacts-link"><a href="tel:#">+1 323-913-4688</a></p>
-                  <p class="box-contacts-link"><a href="tel:#">+1 323-888-4554</a></p>
+                  <p class="box-contacts-link"><a class="link-phone" href="tel:#">+1 323-913-4688</a></p>
+                  <p class="box-contacts-link"><a class="link-phone" href="tel:#">+1 323-888-4554</a></p>
                 </div>
               </article>
             </div>
@@ -117,7 +127,7 @@
                 <div class="box-contacts-body">
                   <div class="box-contacts-icon fl-bigmug-line-up104"></div>
                   <div class="box-contacts-decor"></div>
-                  <p class="box-contacts-link"><a href="#">4730 Crystal Springs Dr, Los Angeles, CA 90027</a></p>
+                  <p class="box-contacts-link"><a href="#" class="link-location">4730 Crystal Springs Dr, Los Angeles, CA 90027</a></p>
                 </div>
               </article>
             </div>
@@ -126,7 +136,7 @@
                 <div class="box-contacts-body">
                   <div class="box-contacts-icon fl-bigmug-line-chat55"></div>
                   <div class="box-contacts-decor"></div>
-                  <p class="box-contacts-link"><a href="mailto:#">mail@demolink.org</a></p>
+                  <p class="box-contacts-link"><a href="mailto:#" class="link-aemail">mail@demolink.org</a></p>
                   <p class="box-contacts-link"><a href="mailto:#">info@demolink.org</a></p>
                 </div>
               </article>
@@ -178,7 +188,7 @@
         </div>
       </section>
 
-      <!-- Page Footer--><a class="banner" href="https://www.templatemonster.com/intense-multipurpose-html-template.html" target="_blank"><img src="images/intense_big_02.jpg" alt=""/></a>
+      
       <footer class="section footer-corporate context-dark">
         <div class="footer-corporate-inset">
           <div class="container">
@@ -274,6 +284,7 @@
         </div>
       </footer>
     </div>
+  </div>
     <!-- Global Mailform Output-->
     <div class="snackbars" id="form-output-global"></div>
     <!-- Javascript-->

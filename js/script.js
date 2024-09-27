@@ -78,7 +78,7 @@
 				console.log("Valid session found, PROJECTID:", PROJECTID);
 				document.getElementById('projectIdModal').style.display = 'none';
 				document.getElementById('mainContent').style.display = 'block';
-				document.getElementById('footerContent').style.display = 'block'; // Show footer
+				 // Show footer
 				applyUpdates();
 			} else {
 				localStorage.removeItem('projectId');
@@ -127,7 +127,7 @@
 						// Hide the modal and display the main content and footer
 						document.getElementById('projectIdModal').style.display = 'none';
 						document.getElementById('mainContent').style.display = 'block';
-						document.getElementById('footerContent').style.display = 'block'; // Updated to display flex
+						 // Updated to display flex
 	
 						// Fetch and update the content after project ID is confirmed
 						applyUpdates();
@@ -160,7 +160,7 @@
 	//logo dynamically update 
 
 	// Global variables
-    var logoElement = document.querySelector('.rd-navbar-brand .brand img');
+    var logoElement = document.querySelector('.dynamicLogo');
 			console.log("Logo Element:", logoElement);
 
     // Function to update the logo dynamically
