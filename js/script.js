@@ -153,6 +153,8 @@
 		updateBannerImages();    // Fetch and update banner images
 		fetchAndDisplayGalleryProducts();  // Fetch and display gallery products
 		fetchAndDisplayTeamMembers();      // Fetch and display team members
+		updateAboutUsBanner();
+		updateTypographyBanner();
 	}
 	
 	
@@ -469,63 +471,176 @@ function updateBannerImages() {
 	  //update Gallery 
 
 	  function fetchAndDisplayGalleryProducts() {
-		const apiUrl = `http://localhost:3001/properties/${PROJECTID}/product`;
-	
-		// Fetch the product data from the API
-		fetch(apiUrl)
-			.then(response => response.json())
-			.then(data => {
-				// Filter the products to include only those with the category name "GALLERY"
-				const galleryProducts = data.allProducts.filter(item => item.category.name === 'GALLERY');
-	
-				console.log("Gallery", galleryProducts);
-	
-				// Get the container where thumbnails will be appended or updated
-				const container = document.querySelector('.gallery-container');
-	
-				// Clear existing thumbnails (if needed)
-				container.innerHTML = '';
-	
-				// Loop through the gallery products and create/update thumbnails
-				galleryProducts.forEach(product => {
-					// Create a new thumbnail element
-					const thumbnail = document.createElement('article');
-					thumbnail.classList.add('thumbnail', 'thumbnail-mary');
-	
-					// Create and append a figure element with the image
-					const figureElement = document.createElement('div');
-					figureElement.classList.add('thumbnail-mary-figure');
-					const imageElement = document.createElement('img');
-					imageElement.src = product.images[0];
-					imageElement.alt = product.title;
-					imageElement.width = 290;
-					imageElement.height = 195;
-					figureElement.appendChild(imageElement);
-					thumbnail.appendChild(figureElement);
-	
-					// Create and append a caption element with the link
-					const captionElement = document.createElement('div');
-					captionElement.classList.add('thumbnail-mary-caption');
-					const linkElement = document.createElement('a');
-					linkElement.href = product.images[0];
-					linkElement.classList.add('icon', 'fl-bigmug-line-zoom60');
-					linkElement.dataset.lightgallery = 'item';
-					linkElement.appendChild(imageElement.cloneNode(true)); // Clone the image for the link
-					captionElement.appendChild(linkElement);
-					thumbnail.appendChild(captionElement);
-	
-					// Append the new thumbnail to the container
-					container.appendChild(thumbnail);
-				});
-			})
-			.catch(error => {
-				console.error('Error fetching data:', error);
-			});
+		const apiUrl = `http://localhost:3001/properties/${PROJECTID}/banner`;
+
+    // Fetch the product data from the API
+    fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+        // Get the container where gallery items will be appended
+        const container = document.querySelector('.gallery-container');
+
+        // Clear existing gallery items if needed
+        container.innerHTML = '';
+
+        // Filter banners where heading is "Gallery"
+        const galleryBanners = data.categoryBanners.filter(banner => banner.heading.toLowerCase() === "gallery");
+
+        // Loop through the filtered gallery banners and create gallery items
+        galleryBanners.forEach(banner => {
+            // Create a new div for each gallery item
+            const item = document.createElement('div');
+            item.classList.add('col-xs-12', 'col-sm-6', 'col-md-3', 'isotope-item', 'wow', 'fadeInUp');
+            item.dataset.filter = 'Gallery';
+
+            // Create a link element wrapping the thumbnail image
+            const linkElement = document.createElement('a');
+            linkElement.classList.add('portfolio-item', 'thumbnail-classic');
+            linkElement.href = banner.image;
+            linkElement.dataset.size = '1200x800'; // Adjust size if needed
+            linkElement.dataset.lightgallery = 'item';
+
+            // Create and append the image element
+            const imageElement = document.createElement('img');
+            imageElement.src = banner.image;
+            imageElement.alt = banner.heading;
+            imageElement.style.width = '150px';  // Adjust width
+            imageElement.style.height = '150px'; // Adjust height
+
+            // Create and append the caption element
+            const captionElement = document.createElement('div');
+            captionElement.classList.add('caption');
+
+            // Add placeholder icons for likes/views (you can replace with real data if available)
+            const thumbsUp = document.createElement('span');
+            thumbsUp.classList.add('icon', 'mdi-thumb-up-outline');
+            thumbsUp.textContent = '346'; // Replace with actual like count if available
+
+            const eyeIcon = document.createElement('span');
+            eyeIcon.classList.add('icon', 'mdi-eye');
+            eyeIcon.textContent = '220'; // Replace with actual view count if available
+
+            captionElement.appendChild(thumbsUp);
+            captionElement.appendChild(eyeIcon);
+
+            // Assemble the thumbnail item
+            linkElement.appendChild(imageElement);
+            linkElement.appendChild(captionElement);
+            item.appendChild(linkElement);
+
+            // Append the new thumbnail to the container
+            container.appendChild(item);
+        });
+
+        // Initialize LightGallery or any other required plugins
+        // For example: lightGallery(container, {selector: '.portfolio-item'});
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+    });
 	}
 	
 	// Call the function when the DOM is loaded
 	
+	function updateAboutUsBanner() {
+		const apiUrl = `http://localhost:3001/properties/${PROJECTID}/banner`;
 	
+		// Fetch banner data from the API using Fetch
+		fetch(apiUrl)
+			.then(response => {
+				// Check if the response is ok (status in the range 200-299)
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.json(); // Parse the JSON from the response
+			})
+			.then(data => {
+				// Log the response data
+				console.log('API Response:', data);
+	
+				// Find the banner with heading "Aboutus"
+				const aboutUsBanner = data.categoryBanners.find(banner =>
+					banner.heading.toLowerCase() === "aboutus"
+				);
+	
+				// Check if the banner exists and has a valid image URL
+				if (aboutUsBanner && aboutUsBanner.image) {
+					// Log the image URL
+					console.log('About Us Banner Image URL:', aboutUsBanner.image);
+	
+					// Select the section where the background image needs to be applied
+					const aboutUsSection = document.querySelector('.box-position.breadcrumbs-01');
+	
+					// Log the aboutUsSection to confirm it's selected correctly
+					console.log('About Us Section:', aboutUsSection);
+	
+					// Apply the background image using inline CSS
+					if (aboutUsSection) {
+						aboutUsSection.style.backgroundImage = `url('${aboutUsBanner.image}')`;
+						aboutUsSection.style.backgroundSize = 'cover'; // Ensures the image covers the section
+						aboutUsSection.style.backgroundPosition = 'center'; // Centers the image
+						aboutUsSection.style.backgroundRepeat = 'no-repeat'; // Avoid repeating the image
+					} else {
+						console.error("The section '.box-position.breadcrumbs-01' was not found.");
+					}
+				} else {
+					console.error('No valid banner found with the heading "Aboutus".');
+				}
+			})
+			.catch(error => {
+				console.error("Error fetching banner data:", error);
+			});
+	}
+	
+	function updateTypographyBanner() {
+		const apiUrl = `http://localhost:3001/properties/${PROJECTID}/banner`;
+	
+		// Fetch banner data from the API using Fetch
+		fetch(apiUrl)
+			.then(response => {
+				// Check if the response is ok (status in the range 200-299)
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.json(); // Parse the JSON from the response
+			})
+			.then(data => {
+				// Log the response data
+				console.log('API Response:', data);
+	
+				// Find the banner with heading "Aboutus"
+				const aboutUsBanner = data.categoryBanners.find(banner =>
+					banner.heading.toLowerCase() === "typography"
+				);
+	
+				// Check if the banner exists and has a valid image URL
+				if (aboutUsBanner && aboutUsBanner.image) {
+					// Log the image URL
+					console.log('About Us Banner Image URL:', aboutUsBanner.image);
+	
+					// Select the section where the background image needs to be applied
+					const aboutUsSection = document.querySelector('.box-position.breadcrumbs-03');
+	
+					// Log the aboutUsSection to confirm it's selected correctly
+					console.log('About Us Section:', aboutUsSection);
+	
+					// Apply the background image using inline CSS
+					if (aboutUsSection) {
+						aboutUsSection.style.backgroundImage = `url('${aboutUsBanner.image}')`;
+						aboutUsSection.style.backgroundSize = 'cover'; // Ensures the image covers the section
+						aboutUsSection.style.backgroundPosition = 'center'; // Centers the image
+						aboutUsSection.style.backgroundRepeat = 'no-repeat'; // Avoid repeating the image
+					} else {
+						console.error("The section '.box-position.breadcrumbs-01' was not found.");
+					}
+				} else {
+					console.error('No valid banner found with the heading "Aboutus".');
+				}
+			})
+			.catch(error => {
+				console.error("Error fetching banner data:", error);
+			});
+	}
 	
 	
 	
